@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, RotateCcw } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import { RefundReceiptModal } from "@/components/receipt/refund-receipt-modal";
 
 interface RefundItem {
@@ -29,6 +29,7 @@ interface RefundModalProps {
 
 export function RefundModal({ saleId, saleTotal, items, onClose }: RefundModalProps) {
   const router = useRouter();
+  const { fmt } = useSettings();
   const [selected, setSelected] = useState<Set<string>>(() => new Set(items.map((i) => i.id)));
   const [qtys, setQtys] = useState<Record<string, number>>(
     Object.fromEntries(items.map((i) => [i.id, i.quantity]))
@@ -115,7 +116,7 @@ export function RefundModal({ saleId, saleTotal, items, onClose }: RefundModalPr
             <RotateCcw className="h-4 w-4 text-muted-foreground" />
             <div>
               <h2 className="font-semibold">Issue Refund</h2>
-              <p className="text-xs text-muted-foreground">Sale total: {formatCurrency(saleTotal)}</p>
+              <p className="text-xs text-muted-foreground">Sale total: {fmt(saleTotal)}</p>
             </div>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
@@ -171,7 +172,7 @@ export function RefundModal({ saleId, saleTotal, items, onClose }: RefundModalPr
                       disabled={!selected.has(item.id)}
                     />
                     <span className="text-xs text-muted-foreground w-14 text-right">
-                      {formatCurrency(parseFloat(item.price.toString()) * (qtys[item.id] ?? item.quantity))}
+                      {fmt(parseFloat(item.price.toString()) * (qtys[item.id] ?? item.quantity))}
                     </span>
                   </div>
                 </label>
@@ -182,7 +183,7 @@ export function RefundModal({ saleId, saleTotal, items, onClose }: RefundModalPr
           {/* Refund total */}
           <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-2.5">
             <span className="text-sm font-medium">Refund Amount</span>
-            <span className="text-lg font-bold text-destructive">{formatCurrency(refundTotal)}</span>
+            <span className="text-lg font-bold text-destructive">{fmt(refundTotal)}</span>
           </div>
 
           {/* Reason */}
@@ -220,7 +221,7 @@ export function RefundModal({ saleId, saleTotal, items, onClose }: RefundModalPr
               disabled={saving || selectedItems.length === 0}
               className="flex-1 rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-60 transition-colors"
             >
-              {saving ? "Processing…" : `Refund ${formatCurrency(refundTotal)}`}
+              {saving ? "Processing…" : `Refund ${fmt(refundTotal)}`}
             </button>
           </div>
         </form>

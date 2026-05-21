@@ -15,22 +15,29 @@ export default async function CustomerProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const raw = await prisma.customer.findUnique({
-    where: { id },
-    include: {
-      sales: {
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        include: {
-          items: { select: { id: true, name: true, quantity: true, price: true, total: true, notes: true } },
+  const [raw, settings] = await Promise.all([
+    prisma.customer.findUnique({
+      where: { id },
+      include: {
+        sales: {
+          orderBy: { createdAt: "desc" },
+          take: 50,
+          include: {
+            items: { select: { id: true, name: true, quantity: true, price: true, total: true, notes: true } },
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.businessSettings.findUnique({ where: { id: "singleton" } })
+  ]);
 
   if (!raw) notFound();
 
   const customer = serialize(raw);
+
+  const c = settings?.currency ?? "$";
+  const d = settings?.currencyDecimals ?? 2;
+  const l = settings?.language ?? "en";
 
   const totalSpend = customer.sales
     .filter((s: any) => s.status === "COMPLETED")
@@ -64,7 +71,7 @@ export default async function CustomerProfilePage({
           <div className="border-t pt-4 grid grid-cols-2 gap-3">
             <div>
               <p className="text-xs text-muted-foreground">Total Spend</p>
-              <p className="text-lg font-bold">{formatCurrency(totalSpend)}</p>
+              <p className="text-lg font-bold">{formatCurrency(totalSpend, c, d, l)}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Visits</p>
@@ -109,7 +116,7 @@ export default async function CustomerProfilePage({
                       >
                         {sale.status}
                       </span>
-                      <span className="text-sm font-semibold">{formatCurrency(parseFloat(sale.total.toString()))}</span>
+                      <span className="text-sm font-semibold">{formatCurrency(parseFloat(sale.total.toString()), c, d, l)}</span>
                     </div>
                   </summary>
                   <div className="px-4 pb-3 pt-1 space-y-1">
@@ -119,13 +126,13 @@ export default async function CustomerProfilePage({
                           {item.name} × {item.quantity}
                           {item.notes && <em className="ml-2 italic">({item.notes})</em>}
                         </span>
-                        <span>{formatCurrency(parseFloat(item.total.toString()))}</span>
+                        <span>{formatCurrency(parseFloat(item.total.toString()), c, d, l)}</span>
                       </div>
                     ))}
                     {sale.tipAmount > 0 && (
                       <div className="flex justify-between text-xs text-muted-foreground border-t pt-1">
                         <span>Tip</span>
-                        <span>{formatCurrency(parseFloat(sale.tipAmount.toString()))}</span>
+                        <span>{formatCurrency(parseFloat(sale.tipAmount.toString()), c, d, l)}</span>
                       </div>
                     )}
                   </div>

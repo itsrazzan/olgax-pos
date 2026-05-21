@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { formatCurrency } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import {
   BarChart,
   Bar,
@@ -42,6 +42,7 @@ const PIE_COLORS = ["#0f2044", "#f5c518", "#4fb8a5", "#e26c1a", "#9b5cc9"];
 export function ReportsDashboard() {
   const t = useTranslations("reports");
   const tp = useTranslations("products");
+  const { fmt } = useSettings();
   const [range, setRange] = useState<Range>("today");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -97,17 +98,17 @@ export function ReportsDashboard() {
 
     rows.push(["TOP SELLING PRODUCTS"]);
     rows.push(["Product", "Units Sold", "Revenue"]);
-    topProducts.forEach(p => rows.push([p.name, String(p.qty), formatCurrency(p.revenue)]));
+    topProducts.forEach(p => rows.push([p.name, String(p.qty), fmt(p.revenue)]));
     rows.push([]);
 
     rows.push(["REVENUE BY DAY"]);
     rows.push(["Date", "Revenue", "Transactions"]);
-    revenueByDay.forEach(d => rows.push([d.date, formatCurrency(d.revenue), String(d.transactions)]));
+    revenueByDay.forEach(d => rows.push([d.date, fmt(d.revenue), String(d.transactions)]));
     rows.push([]);
 
     rows.push(["PAYMENT METHODS"]);
     rows.push(["Method", "Amount"]);
-    pieData.forEach(d => rows.push([d.method, formatCurrency(d.value)]));
+    pieData.forEach(d => rows.push([d.method, fmt(d.value)]));
 
     const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -123,16 +124,16 @@ export function ReportsDashboard() {
     ? [
         {
           label: excludeRefunds ? t("net_revenue") : t("revenue"),
-          value: formatCurrency(excludeRefunds
+          value: fmt(excludeRefunds
             ? Math.max(0, summary.revenue - (summary.refundTotal ?? 0))
             : summary.revenue),
         },
-        { label: t("gross_profit"), value: formatCurrency(summary.grossProfit ?? 0) },
+        { label: t("gross_profit"), value: fmt(summary.grossProfit ?? 0) },
         { label: t("transactions"), value: summary.transactions.toString() },
-        { label: t("avg_transaction"), value: formatCurrency(summary.avgTransaction) },
-        { label: t("tips"), value: formatCurrency(summary.tips) },
+        { label: t("avg_transaction"), value: fmt(summary.avgTransaction) },
+        { label: t("tips"), value: fmt(summary.tips) },
         { label: t("voided"), value: summary.voidedCount.toString() },
-        { label: t("refunds"), value: `${summary.refundCount ?? 0} / ${formatCurrency(summary.refundTotal ?? 0)}` },
+        { label: t("refunds"), value: `${summary.refundCount ?? 0} / ${fmt(summary.refundTotal ?? 0)}` },
         { label: t("customer_visits"), value: summary.customerVisits.toString() },
       ]
     : [];
@@ -302,9 +303,9 @@ export function ReportsDashboard() {
                     return d.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
                   }}
                 />
-                <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `$${v}`} width={48} />
+                <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => fmt(v)} width={55} />
                 <Tooltip
-                  formatter={(v: number | undefined) => [v !== undefined ? formatCurrency(v) : "$0.00", "Revenue"]}
+                  formatter={(v: any) => [v !== undefined ? fmt(v) : fmt(0), "Revenue"]}
                   labelFormatter={(l) => new Date(l + "T00:00:00").toLocaleDateString()}
                   contentStyle={{ fontSize: 12 }}
                 />
@@ -338,7 +339,7 @@ export function ReportsDashboard() {
                   ))}
                 </Pie>
                 <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: number | undefined) => formatCurrency(v ?? 0)} />
+                <Tooltip formatter={(v: any) => fmt(v ?? 0)} />
               </PieChart>
             </ResponsiveContainer>
           )}
@@ -370,7 +371,7 @@ export function ReportsDashboard() {
                 <tr key={`${p.name}-${i}`} className="hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3">{p.name}</td>
                   <td className="px-4 py-3 text-right">{p.qty}</td>
-                  <td className="px-4 py-3 text-right">{formatCurrency(p.revenue)}</td>
+                  <td className="px-4 py-3 text-right">{fmt(p.revenue)}</td>
                 </tr>
               ))
             )}

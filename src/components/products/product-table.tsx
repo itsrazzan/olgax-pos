@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Pencil, Trash2, AlertTriangle, PackagePlus } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import { deleteProduct } from "@/app/actions/product-actions";
 import { StockAdjustModal } from "./stock-adjust-modal";
 
@@ -25,6 +25,7 @@ interface ProductTableProps {
 
 export function ProductTable({ products }: ProductTableProps) {
   const t = useTranslations("products");
+  const { fmt } = useSettings();
   const [adjusting, setAdjusting] = useState<Product | null>(null);
 
   if (products.length === 0) {
@@ -64,7 +65,7 @@ export function ProductTable({ products }: ProductTableProps) {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{product.sku ?? "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{product.category ?? "—"}</td>
-                  <td className="px-4 py-3 text-right">{formatCurrency(parseFloat(product.price.toString()))}</td>
+                  <td className="px-4 py-3 text-right">{fmt(parseFloat(product.price.toString()))}</td>
                   <td className="px-4 py-3 text-right">
                     <span className={isLowStock ? "flex items-center justify-end gap-1 text-yellow-600 font-medium" : ""}>
                       {isLowStock && <AlertTriangle className="h-3.5 w-3.5" />}

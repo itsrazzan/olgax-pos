@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cart";
 import { X, History, PackagePlus } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 
 interface HeldOrder {
   id: string;
@@ -25,6 +25,7 @@ interface HeldOrdersModalProps {
 export function HeldOrdersModal({ open, onClose }: HeldOrdersModalProps) {
   const [orders, setOrders] = useState<HeldOrder[]>([]);
   const [loading, setLoading] = useState(false);
+  const { fmt } = useSettings();
   const { items, setDiscount, setPaymentMethod, addItem, clearCart } = useCartStore();
 
   async function fetchOrders() {
@@ -104,7 +105,7 @@ export function HeldOrdersModal({ open, onClose }: HeldOrdersModalProps) {
                     {order.label ?? new Date(order.createdAt).toLocaleTimeString()}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {snap.items.length} item(s) · {formatCurrency(total)}
+                    {snap.items.length} item(s) · {fmt(total)}
                   </p>
                 </div>
                 <div className="flex gap-2">

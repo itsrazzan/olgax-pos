@@ -4,7 +4,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCartStore } from "@/store/cart";
-import { formatCurrency, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import { Minus, Plus, Trash2, ClipboardList, MessageSquarePlus } from "lucide-react";
 import { ProductSearch } from "./product-search";
 import { PaymentPanel } from "./payment-panel";
@@ -16,22 +17,13 @@ import { NumericKeypad } from "@/components/ui/numeric-keypad";
 import { ReceiptModal } from "@/components/receipt/receipt-modal";
 import { KeyboardShortcutsModal } from "./keyboard-shortcuts-modal";
 import { usePosKeyboardShortcuts } from "@/hooks/use-pos-keyboard-shortcuts";
-import type { ReceiptData, ReceiptSettings } from "@/components/receipt/receipt";
-
-const DEFAULT_TAX_RATE = 0; // overridden via business settings
-
-const DEFAULT_RECEIPT_SETTINGS: ReceiptSettings = {
-  name: "My Shop",
-  logoUrl: null,
-  currency: "$",
-  currencyDecimals: 2,
-  taxName: "Tax",
-  receiptFooter: "Thank you for your business!",
-};
+import type { ReceiptData } from "@/components/receipt/receipt";
 
 export function POSScreen() {
   const t = useTranslations("pos");
-  const [taxRate] = useState(DEFAULT_TAX_RATE);
+  const settings = useSettings();
+  const fmt = settings.fmt;
+  const [taxRate] = useState(settings.taxRate);
   const [showHeldOrders, setShowHeldOrders] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const [voidTargetId, setVoidTargetId] = useState<string | null>(null);
@@ -246,7 +238,7 @@ export function POSScreen() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(item.price)} each
+                      {fmt(item.price)} each
                     </p>
                   </div>
 
@@ -293,7 +285,7 @@ export function POSScreen() {
 
                   {/* Line total */}
                   <span className="text-sm font-semibold w-16 text-right">
-                    {formatCurrency(item.price * item.quantity)}
+                    {fmt(item.price * item.quantity)}
                   </span>
 
                   {/* Note toggle */}
@@ -341,29 +333,29 @@ export function POSScreen() {
         <div className="border-t p-4 space-y-1 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("subtotal")}</span>
-            <span>{formatCurrency(sub)}</span>
+            <span>{fmt(sub)}</span>
           </div>
           {disc > 0 && (
             <div className="flex justify-between text-green-600">
               <span>{t("discount")}</span>
-              <span>−{formatCurrency(disc)}</span>
+              <span>−{fmt(disc)}</span>
             </div>
           )}
           {tax > 0 && (
             <div className="flex justify-between text-muted-foreground">
               <span>{t("tax")}</span>
-              <span>{formatCurrency(tax)}</span>
+              <span>{fmt(tax)}</span>
             </div>
           )}
           {tipAmount > 0 && (
             <div className="flex justify-between text-muted-foreground">
               <span>{t("tip")}</span>
-              <span>{formatCurrency(tipAmount)}</span>
+              <span>{fmt(tipAmount)}</span>
             </div>
           )}
           <div className="flex justify-between border-t pt-2 text-base font-bold">
             <span>{t("total")}</span>
-            <span>{formatCurrency(tot)}</span>
+            <span>{fmt(tot)}</span>
           </div>
         </div>
 
@@ -399,7 +391,14 @@ export function POSScreen() {
           open={true}
           onClose={() => setReceiptData(null)}
           data={receiptData}
-          settings={DEFAULT_RECEIPT_SETTINGS}
+          settings={{
+            name: settings.name,
+            logoUrl: settings.logoUrl,
+            currency: settings.currency,
+            currencyDecimals: settings.currencyDecimals,
+            taxName: settings.taxName,
+            receiptFooter: settings.receiptFooter,
+          }}
         />
       )}
 

@@ -4,6 +4,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { AppShell } from "@/components/layout/app-shell";
+import { SettingsProvider } from "@/context/settings-context";
 
 export const dynamic = "force-dynamic";
 
@@ -55,13 +56,28 @@ export default async function AppLayout({
     "--sidebar-primary": accent,
   } as React.CSSProperties;
 
+  // Business settings for the currency/settings context
+  const settingsValue = {
+    currency: settings?.currency ?? "$",
+    currencyDecimals: settings?.currencyDecimals ?? 2,
+    taxRate: settings?.taxRate ? Number(settings.taxRate) : 0,
+    language: settings?.language ?? "en",
+    name: settings?.name ?? "My Store",
+    logoUrl: settings?.logoUrl ?? null,
+    taxName: settings?.taxName ?? "Tax",
+    receiptFooter: settings?.receiptFooter ?? "Thank you for your purchase!",
+  };
+
   return (
     <>
       {/* eslint-disable-next-line react/no-danger */}
       <style dangerouslySetInnerHTML={{ __html: brandingCSS }} />
-      <AppShell user={session.user} cssVars={cssVars}>
-        {children}
-      </AppShell>
+      <SettingsProvider value={settingsValue}>
+        <AppShell user={session.user} cssVars={cssVars}>
+          {children}
+        </AppShell>
+      </SettingsProvider>
     </>
   );
 }
+

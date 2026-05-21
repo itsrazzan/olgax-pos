@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { X, Printer } from "lucide-react";
 import { Receipt } from "@/components/receipt/receipt";
+import { useSettings } from "@/context/settings-context";
 
 interface RefundItem {
   name: string;
@@ -20,24 +21,6 @@ interface RefundReceiptModalProps {
   reason?: string;
 }
 
-interface ReceiptSettings {
-  name: string;
-  logoUrl: string | null;
-  currency: string;
-  currencyDecimals: number;
-  taxName: string;
-  receiptFooter: string;
-}
-
-const FALLBACK_SETTINGS: ReceiptSettings = {
-  name: "My Store",
-  logoUrl: null,
-  currency: "$",
-  currencyDecimals: 2,
-  taxName: "Tax",
-  receiptFooter: "",
-};
-
 export function RefundReceiptModal({
   open,
   onClose,
@@ -47,15 +30,7 @@ export function RefundReceiptModal({
   reason,
 }: RefundReceiptModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
-  const [settings, setSettings] = useState<ReceiptSettings>(FALLBACK_SETTINGS);
-
-  useEffect(() => {
-    if (!open) return;
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => setSettings({ ...FALLBACK_SETTINGS, ...d }))
-      .catch(() => {});
-  }, [open]);
+  const settings = useSettings();
 
   if (!open) return null;
 

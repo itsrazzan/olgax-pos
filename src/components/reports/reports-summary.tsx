@@ -12,8 +12,9 @@ export async function ReportsSummary() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let topProducts!: any[];
 
+  let settings;
   try {
-    [todaysSales, topProducts] = await Promise.all([
+    [todaysSales, topProducts, settings] = await Promise.all([
       prisma.sale.findMany({
         where: {
           createdAt: { gte: today },
@@ -27,6 +28,7 @@ export async function ReportsSummary() {
         orderBy: { _sum: { total: "desc" } },
         take: 10,
       }),
+      prisma.businessSettings.findUnique({ where: { id: "singleton" } }),
     ]);
   } catch {
     return <DbError page="reports" />;
@@ -48,17 +50,21 @@ export async function ReportsSummary() {
   );
   const avgTransaction = todaysSales.length > 0 ? revenue / todaysSales.length : 0;
 
+  const c = settings?.currency ?? "$";
+  const d = settings?.currencyDecimals ?? 2;
+  const l = settings?.language ?? "en";
+
   return (
     <div className="space-y-6">
       {/* Today summary */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
         {[
-          { label: "Today's Revenue", value: formatCurrency(revenue) },
+          { label: "Today's Revenue", value: formatCurrency(revenue, c, d, l) },
           { label: "Transactions", value: todaysSales.length.toString() },
-          { label: "Cash", value: formatCurrency(cashRevenue) },
-          { label: "Card", value: formatCurrency(cardRevenue) },
-          { label: "Tips Collected", value: formatCurrency(tipTotal) },
-          { label: "Avg. Transaction", value: formatCurrency(avgTransaction) },
+          { label: "Cash", value: formatCurrency(cashRevenue, c, d, l) },
+          { label: "Card", value: formatCurrency(cardRevenue, c, d, l) },
+          { label: "Tips Collected", value: formatCurrency(tipTotal, c, d, l) },
+          { label: "Avg. Transaction", value: formatCurrency(avgTransaction, c, d, l) },
         ].map((stat) => (
           <div key={stat.label} className="rounded-lg border p-4 space-y-1">
             <p className="text-xs text-muted-foreground">{stat.label}</p>
@@ -85,7 +91,7 @@ export async function ReportsSummary() {
                   <td className="px-4 py-3">{p.name}</td>
                   <td className="px-4 py-3 text-right">{p._sum.quantity ?? 0}</td>
                   <td className="px-4 py-3 text-right">
-                    {formatCurrency(parseFloat((p._sum.total ?? 0).toString()))}
+                    {formatCurrency(parseFloat((p._sum.total ?? 0).toString()), c, d, l)}
                   </td>
                 </tr>
               ))}

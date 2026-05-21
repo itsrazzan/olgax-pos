@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { RotateCcw } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import { RefundModal } from "./refund-modal";
 
 interface SaleItem {
@@ -33,6 +33,7 @@ interface SalesTableProps {
 export function SalesTable({ sales }: SalesTableProps) {
   const t = useTranslations("sales");
   const tr = useTranslations("receipt");
+  const { fmt } = useSettings();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [refunding, setRefunding] = useState<Sale | null>(null);
 
@@ -95,7 +96,7 @@ export function SalesTable({ sales }: SalesTableProps) {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right font-medium">
-                  {formatCurrency(parseFloat(sale.total.toString()))}
+                  {fmt(parseFloat(sale.total.toString()))}
                 </td>
                 <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-center">
@@ -138,10 +139,10 @@ export function SalesTable({ sales }: SalesTableProps) {
                               <td className="py-1">{item.name}</td>
                               <td className="text-right py-1">{item.quantity}</td>
                               <td className="text-right py-1">
-                                {formatCurrency(parseFloat(item.price.toString()))}
+                                {fmt(parseFloat(item.price.toString()))}
                               </td>
                               <td className="text-right py-1">
-                                {formatCurrency(parseFloat(item.total.toString()))}
+                                {fmt(parseFloat(item.total.toString()))}
                               </td>
                             </tr>
                             {item.notes && (

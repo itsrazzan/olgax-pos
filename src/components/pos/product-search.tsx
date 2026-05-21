@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Search, Plus, AlertTriangle } from "lucide-react";
 import { useCartStore } from "@/store/cart";
-import { formatCurrency, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import { toast } from "sonner";
 import { getDeviceSettings, playErrorBeep } from "@/hooks/use-device-settings";
 
@@ -25,6 +26,7 @@ export function ProductSearch() {
   const [allProducts, setAllProducts] = useState<ProductResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [gridLoading, setGridLoading] = useState(true);
+  const { fmt } = useSettings();
   const addItem = useCartStore((s) => s.addItem);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastKeypressRef = useRef<number>(0);
@@ -159,7 +161,7 @@ export function ProductSearch() {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold">{formatCurrency(p.price)}</p>
+                    <p className="text-sm font-semibold">{fmt(p.price)}</p>
                     <p className="text-xs text-muted-foreground">Stock: {p.stock}</p>
                   </div>
                 </button>
@@ -204,7 +206,7 @@ export function ProductSearch() {
                   </div>
                   <div className="flex w-full items-end justify-between mt-1.5">
                     <span className="text-sm font-bold text-primary">
-                      {formatCurrency(p.price)}
+                      {fmt(p.price)}
                     </span>
                     {p.stock > 0 && p.stock <= 5 && (
                       <span className="flex items-center gap-0.5 text-[10px] text-amber-600 dark:text-amber-400">

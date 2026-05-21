@@ -28,21 +28,25 @@ export default async function ProductDetailPage({ params }: Props) {
 
   let product;
   let adjustments;
+  let settings;
   try {
-    const rawProduct = await prisma.product.findUnique({
-      where: { id },
-      include: { supplier: { select: { id: true, name: true } } },
-    });
+    const [rawProduct, rawAdj, rawSettings] = await Promise.all([
+      prisma.product.findUnique({
+        where: { id },
+        include: { supplier: { select: { id: true, name: true } } },
+      }),
+      prisma.stockAdjustment.findMany({
+        where: { productId: id },
+        include: { user: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      }),
+      prisma.businessSettings.findUnique({ where: { id: "singleton" } })
+    ]);
     if (!rawProduct) notFound();
     product = serialize(rawProduct);
-
-    const rawAdj = await prisma.stockAdjustment.findMany({
-      where: { productId: id },
-      include: { user: { select: { name: true } } },
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    });
     adjustments = serialize(rawAdj);
+    settings = serialize(rawSettings);
   } catch (e: any) {
     if (e?.name === "NotFoundError") notFound();
     return <DbError page="product" />;
@@ -60,6 +64,10 @@ export default async function ProductDetailPage({ params }: Props) {
     year: "numeric", month: "short", day: "2-digit",
     hour: "2-digit", minute: "2-digit",
   });
+
+  const c = settings?.currency ?? "$";
+  const d = settings?.currencyDecimals ?? 2;
+  const l = settings?.language ?? "en";
 
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
@@ -122,12 +130,12 @@ export default async function ProductDetailPage({ params }: Props) {
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground uppercase font-medium">Sale Price</p>
-            <p className="text-2xl font-bold">{formatCurrency(parseFloat(String(product.price)))}</p>
+            <p className="text-2xl font-bold">{formatCurrency(parseFloat(String(product.price)), c, d, l)}</p>
           </div>
           {product.cost && (
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground uppercase font-medium">Cost</p>
-              <p className="text-2xl font-bold">{formatCurrency(parseFloat(String(product.cost)))}</p>
+              <p className="text-2xl font-bold">{formatCurrency(parseFloat(String(product.cost)), c, d, l)}</p>
             </div>
           )}
           <div className="space-y-1">

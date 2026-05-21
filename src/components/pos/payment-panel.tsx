@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useCartStore, PaymentMethod } from "@/store/cart";
-import { formatCurrency } from "@/lib/utils";
+import { useSettings } from "@/context/settings-context";
 import { useRouter } from "next/navigation";
 import { PauseCircle, ClipboardList, SplitSquareHorizontal, X, Percent, RotateCcw, Star } from "lucide-react";
 
@@ -28,6 +28,7 @@ const PAYMENT_METHODS: PaymentMethod[] = ["CASH", "CARD", "OTHER"];
 
 export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, customerId }: PaymentPanelProps) {
   const t = useTranslations("pos");
+  const { fmt, currency } = useSettings();
   const router = useRouter();
   const {
     items,
@@ -348,12 +349,12 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
             />
             {loyaltyPointsUsed > 0 && (
               <span className="text-xs text-green-600 font-medium">
-                -{formatCurrency(loyaltyDiscount)}
+                -{fmt(loyaltyDiscount)}
               </span>
             )}
           </div>
           <p className="text-[10px] text-muted-foreground">
-            {loyaltyInfo.earnRate} pt per $1 Â· {loyaltyInfo.redeemValue} pts = $1 off
+            {loyaltyInfo.earnRate} pt per {currency}1 · {loyaltyInfo.redeemValue} pts = {currency}1 off
           </p>
         </div>
       )}
@@ -415,11 +416,11 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
             <div className="flex justify-between text-xs pt-1">
               <span className="text-muted-foreground">
                 Remaining: <span className={splitRemaining > 0 ? "text-destructive font-semibold" : "text-green-600 font-semibold"}>
-                  {formatCurrency(splitRemaining)}
+                  {fmt(splitRemaining)}
                 </span>
               </span>
               {change > 0 && (
-                <span className="text-green-600 font-medium">Change: {formatCurrency(change)}</span>
+                <span className="text-green-600 font-medium">Change: {fmt(change)}</span>
               )}
             </div>
           </div>
@@ -451,12 +452,12 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
                   step={0.01}
                   value={amountTendered || ""}
                   onChange={(e) => setAmountTendered(parseFloat(e.target.value) || 0)}
-                  placeholder={formatCurrency(tot)}
+                  placeholder={fmt(tot)}
                   className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 />
                 {change > 0 && (
                   <p className="text-sm text-green-600 font-medium">
-                    Change: {formatCurrency(change)}
+                    Change: {fmt(change)}
                   </p>
                 )}
               </div>
@@ -470,12 +471,12 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
         <div className="rounded-md bg-muted/40 px-3 py-2 space-y-1 text-xs">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span>{formatCurrency(subtotal())}</span>
+            <span>{fmt(subtotal())}</span>
           </div>
           {discountValue() > 0 && (
             <div className="flex justify-between text-muted-foreground">
               <span>Discount</span>
-              <span>âˆ’{formatCurrency(discountValue())}</span>
+              <span>−{fmt(discountValue())}</span>
             </div>
           )}
           {sub > 0 && (
@@ -497,7 +498,7 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
                   </span>
                 )}
               </button>
-              <span>{formatCurrency(taxAmount(taxRate))}</span>
+              <span>{fmt(taxAmount(taxRate))}</span>
 
               {showTaxEdit && (
                 <>
@@ -573,12 +574,12 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
           {tipAmount > 0 && (
             <div className="flex justify-between text-muted-foreground">
               <span>Tip</span>
-              <span>{formatCurrency(tipAmount)}</span>
+              <span>{fmt(tipAmount)}</span>
             </div>
           )}
           <div className="flex justify-between font-semibold text-foreground border-t pt-1 mt-1">
             <span>Total</span>
-            <span>{formatCurrency(tot)}</span>
+            <span>{fmt(tot)}</span>
           </div>
         </div>
       )}
@@ -592,7 +593,7 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
         disabled={isEmpty || loading || (splitMode && splitRemaining > 0.005)}
         className="w-full rounded-md bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors disabled:pointer-events-none disabled:opacity-50"
       >
-        {loading ? "Processingâ€¦" : `${t("checkout")} ${formatCurrency(tot)}`}
+        {loading ? "Processing…" : `${t("checkout")} ${fmt(tot)}`}
       </button>
 
       {/* Void / Clear */}
