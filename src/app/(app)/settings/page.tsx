@@ -38,7 +38,15 @@ export default async function SettingsPage() {
 
   return (
     <div className="p-4 sm:p-6 max-w-3xl space-y-10">
-      <h1 className="text-2xl font-bold">{t("title")}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <a 
+          href="/settings/users" 
+          className="flex items-center gap-2 rounded-lg border bg-card px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent transition-colors"
+        >
+          Manage Users & Roles
+        </a>
+      </div>
       <SettingsForm settings={{
         name: settings.name,
         logoUrl: settings.logoUrl,
