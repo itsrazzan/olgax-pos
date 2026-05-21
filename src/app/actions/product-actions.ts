@@ -32,6 +32,7 @@ export async function createProduct(formData: FormData) {
     sku: parsed.data.sku || null,
     barcode: parsed.data.barcode || null,
     category: parsed.data.category || null,
+    supplierId: parsed.data.supplierId || null,
     imageUrl: parsed.data.imageUrl || null,
   };
 
@@ -68,6 +69,7 @@ export async function updateProduct(id: string, formData: FormData) {
     sku: parsed.data.sku || null,
     barcode: parsed.data.barcode || null,
     category: parsed.data.category || null,
+    supplierId: parsed.data.supplierId || null,
     imageUrl: parsed.data.imageUrl || null,
   };
 

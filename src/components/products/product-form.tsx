@@ -20,14 +20,16 @@ interface Product {
   category: string | null;
   imageUrl: string | null;
   lowStockThreshold: number;
+  supplierId: string | null;
   active: boolean;
 }
 
 interface ProductFormProps {
   product?: Product;
+  suppliers?: { id: string; name: string }[];
 }
 
-export function ProductForm({ product }: ProductFormProps) {
+export function ProductForm({ product, suppliers = [] }: ProductFormProps) {
   const isEdit = !!product;
   const [uploadLoading, setUploadLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(product?.imageUrl ?? null);
@@ -50,6 +52,7 @@ export function ProductForm({ product }: ProductFormProps) {
           cost: product.cost ? parseFloat(product.cost.toString()) : undefined,
           stock: product.stock,
           category: product.category ?? "",
+          supplierId: product.supplierId ?? "",
           lowStockThreshold: product.lowStockThreshold,
           imageUrl: product.imageUrl ?? "",
           active: product.active,
@@ -151,7 +154,34 @@ export function ProductForm({ product }: ProductFormProps) {
         {field("Low Stock Alert", "lowStockThreshold", { type: "number", min: "0", step: "1" })}
       </div>
 
-      {field("Category", "category", { placeholder: "Beverages" })}
+      <div className="grid grid-cols-2 gap-4">
+        {field("Category", "category", { placeholder: "Beverages" })}
+        
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">Supplier</label>
+          <select
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            {...registerField("supplierId" as any)}
+            className={cn(
+              "border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (errors as any).supplierId && "border-destructive"
+            )}
+          >
+            <option value="">No Supplier</option>
+            {suppliers.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {(errors as any).supplierId && (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            <p className="text-xs text-destructive">{String((errors as any).supplierId?.message)}</p>
+          )}
+        </div>
+      </div>
 
       {/* Image upload */}
       <div className="space-y-2">

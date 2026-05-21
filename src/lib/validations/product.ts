@@ -8,6 +8,7 @@ export const productFormSchema = z.object({
   cost: z.coerce.number().min(0).optional(),
   stock: z.coerce.number().int().min(0).default(0),
   category: z.string().max(100).optional().or(z.literal("")),
+  supplierId: z.string().optional().or(z.literal("")),
   lowStockThreshold: z.coerce.number().int().min(0).default(5),
   imageUrl: z.string().url().optional().or(z.literal("")),
   active: z.preprocess((val) => {

@@ -19,10 +19,15 @@ export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
 
   let product;
+  let suppliers;
   try {
-    const raw = await prisma.product.findUnique({ where: { id } });
+    const [raw, rawSuppliers] = await Promise.all([
+      prisma.product.findUnique({ where: { id } }),
+      prisma.supplier.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+    ]);
     if (!raw) notFound();
     product = serialize(raw);
+    suppliers = rawSuppliers;
   } catch (e: any) {
     if (e?.name === "NotFoundError") notFound();
     return <DbError page="this product" />;
@@ -36,7 +41,7 @@ export default async function EditProductPage({ params }: Props) {
         { label: "Edit" },
       ]} />
       <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
-      <ProductForm product={product} />
+      <ProductForm product={product} suppliers={suppliers} />
     </div>
   );
 }
