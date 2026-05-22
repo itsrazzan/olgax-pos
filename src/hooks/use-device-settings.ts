@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export interface DeviceSettings {
-  defaultPaymentMethod: "CASH" | "CARD" | "OTHER";
+  defaultPaymentMethod: "CASH" | "QRIS" | "OTHER";
   soundOnSale: boolean;
   scannerBeepEnabled: boolean;
   printerType: "serial" | "usb" | "none";

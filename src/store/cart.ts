@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type PaymentMethod = "CASH" | "CARD" | "OTHER";
+export type PaymentMethod = "CASH" | "QRIS" | "OTHER";
 
 export interface CartItem {
   productId: string;

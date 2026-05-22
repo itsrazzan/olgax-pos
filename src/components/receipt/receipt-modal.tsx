@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { X, Printer } from "lucide-react";
+import { Printer, CheckCircle } from "lucide-react";
 import { Receipt } from "./receipt";
 import { printReceipt } from "@/lib/thermal-print";
+import { useTranslations } from "next-intl";
 
 interface ReceiptSettings {
   name: string;
@@ -40,6 +41,7 @@ interface ReceiptModalProps {
 
 export function ReceiptModal({ open, onClose, data, settings }: ReceiptModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("pos");
 
   if (!open) return null;
 
@@ -56,9 +58,11 @@ export function ReceiptModal({ open, onClose, data, settings }: ReceiptModalProp
       {/* Print styles: when printing, only show receipt */}
       <style>{`
         @media print {
-          body > *:not(#receipt-print-overlay) { display: none !important; }
-          #receipt-print-overlay { position: fixed; inset: 0; background: white; }
-          #receipt-print-overlay .no-print { display: none !important; }
+          body * { visibility: hidden; }
+          #receipt-print-overlay, #receipt-print-overlay * { visibility: visible; }
+          #receipt-print-overlay { position: absolute; left: 0; top: 0; width: 100%; }
+          .no-print { display: none !important; }
+          @page { margin: 0; }
         }
       `}</style>
 
@@ -82,8 +86,8 @@ export function ReceiptModal({ open, onClose, data, settings }: ReceiptModalProp
               <Printer className="h-3.5 w-3.5" />
               Print
             </button>
-            <button onClick={onClose} className="rounded p-1 hover:bg-accent transition-colors">
-              <X className="h-4 w-4" />
+            <button onClick={onClose} className="rounded p-1 hover:bg-accent transition-colors hidden sm:block">
+              <CheckCircle className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -91,6 +95,13 @@ export function ReceiptModal({ open, onClose, data, settings }: ReceiptModalProp
         {/* Receipt preview */}
         <div ref={printRef} className="overflow-y-auto max-h-[70vh] bg-white p-4">
           <Receipt data={data} settings={settings} />
+        </div>
+        
+        {/* Complete Button */}
+        <div className="no-print border-t p-3 bg-card">
+          <button onClick={onClose} className="w-full rounded-lg bg-primary text-primary-foreground border-transparent py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors">
+            {t("transaction_complete")}
+          </button>
         </div>
       </div>
     </div>

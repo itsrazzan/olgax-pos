@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
   let totalRevenue = 0;
   let totalTips = 0;
   let totalGrossProfit = 0;
-  const paymentBreakdown: Record<string, number> = { CASH: 0, CARD: 0, OTHER: 0 };
+  const paymentBreakdown: Record<string, number> = { CASH: 0, QRIS: 0, OTHER: 0 };
   const uniqueCustomers = new Set<string>();
 
   for (const sale of sales) {

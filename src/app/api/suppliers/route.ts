@@ -5,11 +5,11 @@ import { prisma } from "@/lib/db";
 import { z } from "zod";
 
 const supplierSchema = z.object({
-  name: z.string().min(1),
-  contactName: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email().optional().or(z.literal("")),
-  notes: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  contactName: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  email: z.string().email("Invalid email format").or(z.literal("")).nullable().optional(),
+  notes: z.string().nullable().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -28,13 +28,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await req.json();
   const parsed = supplierSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  if (!parsed.success) {
+    const errorMsg = Object.values(parsed.error.flatten().fieldErrors).flat()[0] ?? "Invalid form data";
+    return NextResponse.json({ error: errorMsg }, { status: 400 });
+  }
 
   const supplier = await prisma.supplier.create({ data: parsed.data });
   return NextResponse.json({ supplier }, { status: 201 });

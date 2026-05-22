@@ -9,6 +9,7 @@ export interface ReceiptItem {
 export interface ReceiptData {
   saleId?: string;
   customerName?: string;
+  cashierName?: string;
   items: ReceiptItem[];
   subtotal: number;
   discountAmount: number;
@@ -78,6 +79,9 @@ export function Receipt({ data, settings }: ReceiptProps) {
       )}
       {data.customerName && (
         <p className="text-[10px] text-center mb-2">For: {data.customerName}</p>
+      )}
+      {data.cashierName && (
+        <p className="text-[10px] text-center mb-2">Cashier: {data.cashierName}</p>
       )}
 
       <div className="border-t border-dashed border-black my-2" />

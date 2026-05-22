@@ -23,6 +23,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    volumes:
+      - olgax_uploads:/app/public/uploads
     environment:
       DATABASE_URL: "postgresql://postgres:password@postgres:5432/olgax_pos?schema=public"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:-change_me_in_production}"
@@ -37,3 +39,4 @@ services:
 
 volumes:
   postgres_data:
+  olgax_uploads:

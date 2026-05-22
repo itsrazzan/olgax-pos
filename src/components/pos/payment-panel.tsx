@@ -18,13 +18,9 @@ interface PaymentPanelProps {
   customerId?: string | null;
 }
 
-const TIP_PRESETS = [
-  { label: "10%", value: 10 },
-  { label: "15%", value: 15 },
-  { label: "20%", value: 20 },
-];
+// No tip presets as per user request
 
-const PAYMENT_METHODS: PaymentMethod[] = ["CASH", "CARD", "OTHER"];
+const PAYMENT_METHODS: PaymentMethod[] = ["CASH", "QRIS", "OTHER"];
 
 export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, customerId }: PaymentPanelProps) {
   const t = useTranslations("pos");
@@ -61,7 +57,7 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
   const [error, setError] = useState<string | null>(null);
   const [customTip, setCustomTip] = useState("");
   const [showTaxEdit, setShowTaxEdit] = useState(false);
-  const [splitInput, setSplitInput] = useState<Record<PaymentMethod, string>>({ CASH: "", CARD: "", OTHER: "" });
+  const [splitInput, setSplitInput] = useState<Record<PaymentMethod, string>>({ CASH: "", QRIS: "", OTHER: "" });
 
   // Loyalty state
   const [loyaltyInfo, setLoyaltyInfo] = useState<{
@@ -96,18 +92,7 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
   const splitRemaining = Math.max(0, tot - splitPaid);
   const effectiveTaxRate = taxRateOverride !== null ? taxRateOverride : taxRate;
 
-  // Tip as percent of subtotal pre-tip
   const sub = subtotal() - discountValue();
-  const activeTipPct = sub > 0 ? Math.round((tipAmount / sub) * 100) : 0;
-
-  function handleTipPreset(pct: number) {
-    if (activeTipPct === pct) {
-      setTipAmount(0);
-    } else {
-      setTipAmount((sub * pct) / 100);
-    }
-    setCustomTip("");
-  }
 
   function handleCustomTip(val: string) {
     setCustomTip(val);
@@ -186,11 +171,12 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
     if (isEmpty) return;
     setHoldLoading(true);
     try {
+      const { items, paymentMethod, amountTendered, discountAmount, discountType } = useCartStore.getState();
       const res = await fetch("/api/held-orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cartSnapshot: { items, paymentMethod, amountTendered },
+          cartSnapshot: { items, paymentMethod, amountTendered, discountAmount, discountType },
           label: `Hold ${new Date().toLocaleTimeString()}`,
         }),
       });
@@ -237,29 +223,19 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
               </button>
             )}
           </div>
-          <div className="flex gap-1.5">
-            {TIP_PRESETS.map((p) => (
-              <button
-                key={p.label}
-                onClick={() => handleTipPreset(p.value)}
-                className={
-                  activeTipPct === p.value && customTip === ""
-                    ? "flex-1 rounded-md border-2 border-primary bg-primary/10 py-1.5 text-xs font-semibold text-primary"
-                    : "flex-1 rounded-md border py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent transition-colors"
-                }
-              >
-                {p.label}
-              </button>
-            ))}
-            <input
-              type="number"
-              min={0}
-              step={0.01}
-              value={customTip}
-              onChange={(e) => handleCustomTip(e.target.value)}
-              placeholder="Custom"
-              className="w-20 rounded-md border px-2 py-1.5 text-xs text-center bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+          <div className="flex">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1.5 text-xs text-muted-foreground">{currency}</span>
+              <input
+                type="number"
+                min={0}
+                step={0.01}
+                value={customTip}
+                onChange={(e) => handleCustomTip(e.target.value)}
+                placeholder="0.00"
+                className="w-full rounded-md border px-3 pl-8 py-1.5 text-xs bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -367,7 +343,7 @@ export function PaymentPanel({ taxRate, onClear, onSaleComplete, onHoldOrders, c
             onClick={() => {
               if (splitMode) {
                 clearPaymentLines();
-                setSplitInput({ CASH: "", CARD: "", OTHER: "" });
+                setSplitInput({ CASH: "", QRIS: "", OTHER: "" });
               } else {
                 // seed the primary method with the remaining total
                 setPaymentLine({ method: paymentMethod, amount: tot });

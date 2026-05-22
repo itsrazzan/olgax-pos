@@ -31,13 +31,17 @@ export const auth = betterAuth({
     },
   },
   session: {
+    expiresIn: 60 * 60 * 24, // 24 hours
     cookieCache: {
       enabled: true,
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24, // 24 hours
     },
   },
   plugins: [
-    admin(),
+    admin({
+      defaultRole: "CASHIER",
+      adminRole: "ADMIN",
+    }),
   ],
 });
 

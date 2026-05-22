@@ -137,7 +137,7 @@ prisma/          # Database schema and migrations
 
 ### Database Changes
 
-- Always create a Prisma migration: `pnpm db:migrate`
+- Always create a Prisma migration: `pnpm db:migrate` 
 - Never edit the schema without a corresponding migration file.
 - Document any breaking schema changes in your PR description.
 

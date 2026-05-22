@@ -21,11 +21,9 @@ export async function createUser(data: FormData) {
   }
 
   try {
-    // Admin plugin is required to use admin.createUser
-    // If we get typing issues, we can cast or ignore since it exists dynamically
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await (auth.api as any).adminCreateUser({
-      body: { name, email, password, role },
+    const result = await (auth.api as any).signUpEmail({
+      body: { name, email, password },
       headers: await headers(),
     });
 

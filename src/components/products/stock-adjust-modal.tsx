@@ -48,7 +48,7 @@ export function StockAdjustModal({
       const res = await fetch("/api/stock-adjustments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, quantity: delta, reason, note: note || undefined }),
+        body: JSON.stringify({ productId, delta, reason, note: note || undefined }),
       });
       if (!res.ok) {
         const d = await res.json();

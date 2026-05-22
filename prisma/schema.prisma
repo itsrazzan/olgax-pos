@@ -27,7 +27,7 @@ enum SaleStatus {
 
 enum PaymentMethod {
   CASH
-  CARD
+  QRIS
   OTHER
 }
 
@@ -44,6 +44,9 @@ model User {
   role          Role      @default(CASHIER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
 
   sales             Sale[]
   sessions          Session[]
@@ -60,7 +63,8 @@ model Session {
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String
+  userId         String
+  impersonatedBy String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -165,6 +169,11 @@ model Sale {
   items    SaleItem[]
   refunds  Refund[]
   loyaltyLogs LoyaltyLog[]
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([createdAt])
+  @@index([status])
 }
 
 model SaleItem {
@@ -179,6 +188,9 @@ model SaleItem {
 
   sale    Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
   product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([saleId])
+  @@index([productId])
 }
 
 // ============================================================
@@ -213,6 +225,9 @@ model LoyaltyLog {
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   sale     Sale?    @relation(fields: [saleId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([saleId])
 }
 
 // ============================================================
@@ -238,6 +253,10 @@ model StockAdjustment {
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Supplier {
@@ -269,6 +288,9 @@ model Refund {
 
   sale Sale @relation(fields: [saleId], references: [id])
   user User @relation(fields: [userId], references: [id])
+
+  @@index([saleId])
+  @@index([userId])
 }
 
 // ============================================================

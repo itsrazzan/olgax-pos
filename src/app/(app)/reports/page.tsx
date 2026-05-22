@@ -13,8 +13,8 @@ export default async function ReportsPage() {
   noStore();
   const session = await auth.api.getSession({ headers: await headers() });
 
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/pos");
+  if (!session) {
+    redirect("/login");
   }
 
   const t = await getTranslations("reports");

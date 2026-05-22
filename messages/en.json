@@ -17,6 +17,12 @@
     "void": "Void Sale",
     "checkout": "Checkout",
     "complete_sale": "Complete Sale",
+    "transaction_complete": "Transaction Complete",
+    "hold_order": "Hold Order",
+    "recall": "Recall",
+    "split": "Split",
+    "charge": "Charge",
+    "create_and_attach": "Create & attach",
     "cash": "Cash",
     "card": "Card",
     "other": "Other",
@@ -45,7 +51,8 @@
     "price": "Price",
     "amount": "Amount",
     "thank_you": "Thank you for your purchase!",
-    "powered_by": "Powered by Olgax POS"
+    "powered_by": "Powered by Olgax POS",
+    "preview": "Receipt Preview"
   },
   "products": {
     "title": "Products",
@@ -159,7 +166,8 @@
     "loyalty": "Loyalty Program",
     "inventory": "Inventory",
     "plugins": "Plugins",
-    "device": "Device Settings"
+    "device": "Device Settings",
+    "printer_disabled": "Printer is disabled. Select Serial or USB to test."
   },
   "common": {
     "save": "Save",
@@ -179,6 +187,7 @@
     "back": "Back",
     "of": "of",
     "enabled": "Enabled",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "delete_customer_failed": "Failed to delete customer"
   }
 }

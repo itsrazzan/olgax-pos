@@ -17,6 +17,7 @@ interface ProductResult {
   barcode?: string | null;
   sku?: string | null;
   category?: string | null;
+  imageUrl?: string | null;
 }
 
 export function ProductSearch() {
@@ -198,11 +199,25 @@ export function ProductSearch() {
                       : "hover:bg-accent hover:border-primary/30 active:scale-[0.98] cursor-pointer bg-card"
                   )}
                 >
-                  <div className="flex w-full items-start justify-between gap-1">
-                    <p className="text-xs font-semibold leading-tight line-clamp-2 flex-1">
-                      {p.name}
-                    </p>
-                    <Plus className="h-3.5 w-3.5 shrink-0 text-muted-foreground mt-0.5" />
+                  <div className="flex w-full items-start justify-between gap-2">
+                    {p.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.imageUrl}
+                        alt={p.name}
+                        className="h-10 w-10 shrink-0 rounded-md object-cover border bg-white"
+                      />
+                    ) : (
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-muted">
+                        <span className="text-[10px] text-muted-foreground uppercase">{p.name.substring(0, 2)}</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0 flex items-start justify-between gap-1">
+                      <p className="text-xs font-semibold leading-tight line-clamp-3">
+                        {p.name}
+                      </p>
+                      <Plus className="h-3.5 w-3.5 shrink-0 text-muted-foreground mt-0.5" />
+                    </div>
                   </div>
                   <div className="flex w-full items-end justify-between mt-1.5">
                     <span className="text-sm font-bold text-primary">

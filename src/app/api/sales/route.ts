@@ -15,10 +15,10 @@ const saleSchema = z.object({
       notes: z.string().optional(),
     })
   ).min(1),
-  paymentMethod: z.enum(["CASH", "CARD", "OTHER"]).default("CASH"),
+  paymentMethod: z.enum(["CASH", "QRIS", "OTHER"]).default("CASH"),
   amountTendered: z.number().optional(),
   paymentLines: z.array(z.object({
-    method: z.enum(["CASH", "CARD", "OTHER"]),
+    method: z.enum(["CASH", "QRIS", "OTHER"]),
     amount: z.number().min(0),
   })).optional(),
   tipAmount: z.number().min(0).default(0),
@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
     parsed.data;
 
   // Derive primary paymentMethod from largest split-tender line (if split mode)
-  const effectiveMethod: "CASH" | "CARD" | "OTHER" =
+  const effectiveMethod: "CASH" | "QRIS" | "OTHER" =
     paymentLines && paymentLines.length > 0
-      ? (paymentLines.reduce((a, b) => (a.amount >= b.amount ? a : b)).method as "CASH" | "CARD" | "OTHER")
+      ? (paymentLines.reduce((a, b) => (a.amount >= b.amount ? a : b)).method as "CASH" | "QRIS" | "OTHER")
       : paymentMethod;
 
   // Load loyalty settings if customer is attached
@@ -116,13 +116,18 @@ export async function POST(req: NextRequest) {
       include: { items: true },
     });
 
-    // Decrement stock
-    for (const item of items) {
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { stock: { decrement: item.quantity } },
-      });
-    }
+    // Decrement stock (parallel + guard against negative stock)
+    await Promise.all(
+      items.map(async (item) => {
+        const updated = await tx.product.updateMany({
+          where: { id: item.productId, stock: { gte: item.quantity } },
+          data: { stock: { decrement: item.quantity } },
+        });
+        if (updated.count === 0) {
+          throw new Error(`Stok "${item.name}" tidak mencukupi`);
+        }
+      })
+    );
 
     // Loyalty points: deduct redeemed, award earned
     if (customerId && loyaltySettings?.enabled) {

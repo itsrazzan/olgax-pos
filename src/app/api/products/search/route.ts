@@ -3,19 +3,18 @@ import { prisma } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q") ?? "";
-
-  if (!q.trim()) {
-    return NextResponse.json([]);
-  }
+  const limit = parseInt(req.nextUrl.searchParams.get("limit") || "20");
 
   const products = await prisma.product.findMany({
     where: {
       active: true,
-      OR: [
-        { name: { contains: q, mode: "insensitive" } },
-        { sku: { contains: q, mode: "insensitive" } },
-        { barcode: { equals: q } },
-      ],
+      ...(q ? {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { sku: { contains: q, mode: "insensitive" } },
+          { barcode: { equals: q } },
+        ]
+      } : {})
     },
     select: {
       id: true,
@@ -24,8 +23,9 @@ export async function GET(req: NextRequest) {
       stock: true,
       sku: true,
       barcode: true,
+      imageUrl: true,
     },
-    take: 20,
+    take: limit,
     orderBy: { name: "asc" },
   });
 

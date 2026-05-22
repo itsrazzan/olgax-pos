@@ -27,11 +27,11 @@ interface AppSidebarProps {
 
 const navItems = [
   { href: "/pos", key: "pos", icon: ShoppingCart, roles: ["ADMIN", "CASHIER"] },
-  { href: "/products", key: "products", icon: Package, roles: ["ADMIN"] },
-  { href: "/suppliers", key: "suppliers", icon: Truck, roles: ["ADMIN"] },
-  { href: "/customers", key: "customers", icon: Users, roles: ["ADMIN"] },
+  { href: "/products", key: "products", icon: Package, roles: ["ADMIN", "CASHIER"] },
+  { href: "/suppliers", key: "suppliers", icon: Truck, roles: ["ADMIN", "CASHIER"] },
+  { href: "/customers", key: "customers", icon: Users, roles: ["ADMIN", "CASHIER"] },
   { href: "/sales", key: "sales", icon: ReceiptText, roles: ["ADMIN", "CASHIER"] },
-  { href: "/reports", key: "reports", icon: BarChart3, roles: ["ADMIN"] },
+  { href: "/reports", key: "reports", icon: BarChart3, roles: ["ADMIN", "CASHIER"] },
   { href: "/settings", key: "settings", icon: Settings, roles: ["ADMIN"] },
 ];
 
@@ -93,7 +93,10 @@ export function AppSidebar({ user, onLinkClick }: AppSidebarProps) {
           </div>
         </div>
         <button
-          onClick={() => signOut()}
+          onClick={async () => {
+            await signOut();
+            window.location.href = "/login";
+          }}
           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
         >
           <LogOut className="h-4 w-4" />

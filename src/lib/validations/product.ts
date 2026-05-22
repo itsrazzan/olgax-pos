@@ -10,7 +10,7 @@ export const productFormSchema = z.object({
   category: z.string().max(100).optional().or(z.literal("")),
   supplierId: z.string().optional().or(z.literal("")),
   lowStockThreshold: z.coerce.number().int().min(0).default(5),
-  imageUrl: z.string().url().optional().or(z.literal("")),
+  imageUrl: z.string().optional().or(z.literal("")),
   active: z.preprocess((val) => {
     if (typeof val === "string") return val === "true" || val === "on";
     return val === true;

@@ -18,6 +18,7 @@ import { ReceiptModal } from "@/components/receipt/receipt-modal";
 import { KeyboardShortcutsModal } from "./keyboard-shortcuts-modal";
 import { usePosKeyboardShortcuts } from "@/hooks/use-pos-keyboard-shortcuts";
 import type { ReceiptData } from "@/components/receipt/receipt";
+import { useSession } from "@/lib/auth-client";
 
 export function POSScreen() {
   const t = useTranslations("pos");
@@ -39,6 +40,7 @@ export function POSScreen() {
   const [customer, setCustomer] = useState<CustomerSummary | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     setIsClient(true);
@@ -114,6 +116,7 @@ export function POSScreen() {
     const data: ReceiptData = {
       saleId,
       customerName: customer?.name || undefined,
+      cashierName: session?.user?.name || undefined,
       items: items.map((i) => ({
         name: i.name,
         quantity: i.quantity,
@@ -284,7 +287,7 @@ export function POSScreen() {
                   </div>
 
                   {/* Line total */}
-                  <span className="text-sm font-semibold w-16 text-right">
+                  <span className="text-sm font-semibold w-20 shrink-0 whitespace-nowrap text-right ml-2">
                     {fmt(item.price * item.quantity)}
                   </span>
 

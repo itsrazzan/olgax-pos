@@ -39,10 +39,10 @@ export async function ReportsSummary() {
     0
   );
   const cashRevenue = todaysSales
-    .filter((s: typeof todaysSales[number]) => s.paymentMethod === "CASH")
+    .filter((s: typeof todaysSales[number]) => String(s.paymentMethod) === "CASH")
     .reduce((sum: number, s: typeof todaysSales[number]) => sum + parseFloat(s.total.toString()), 0);
   const cardRevenue = todaysSales
-    .filter((s: typeof todaysSales[number]) => s.paymentMethod === "CARD")
+    .filter((s: typeof todaysSales[number]) => String(s.paymentMethod) === "QRIS")
     .reduce((sum: number, s: typeof todaysSales[number]) => sum + parseFloat(s.total.toString()), 0);
   const tipTotal = todaysSales.reduce(
     (sum: number, s: typeof todaysSales[number]) => sum + parseFloat((s.tipAmount ?? 0).toString()),

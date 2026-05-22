@@ -13,7 +13,7 @@ interface HeldOrder {
     items: Array<{ productId: string; name: string; price: number; quantity: number; stock: number }>;
     discountAmount: number;
     discountType: "fixed" | "percent";
-    paymentMethod: "CASH" | "CARD" | "OTHER";
+    paymentMethod: "CASH" | "QRIS" | "OTHER";
   };
 }
 
@@ -50,7 +50,7 @@ export function HeldOrdersModal({ open, onClose }: HeldOrdersModalProps) {
     clearCart();
     const snap = order.cartSnapshot;
     snap.items.forEach((i) => addItem(i));
-    setDiscount(snap.discountAmount, snap.discountType);
+    setDiscount(snap.discountAmount ?? 0, snap.discountType ?? "fixed");
     setPaymentMethod(snap.paymentMethod);
     // Delete from server
     await fetch("/api/held-orders", {

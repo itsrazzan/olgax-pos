@@ -16,7 +16,13 @@
     "hold": "Tahan",
     "void": "Batalkan penjualan",
     "checkout": "Bayar",
-    "complete_sale": "Selesaikan penjualan",
+    "complete_sale": "Selesaikan Penjualan",
+    "transaction_complete": "Transaksi Selesai",
+    "hold_order": "Tahan Pesanan",
+    "recall": "Panggil Pesanan",
+    "split": "Pisah Bayar",
+    "charge": "Bayar",
+    "create_and_attach": "Buat & Pasang",
     "cash": "Tunai",
     "card": "Kartu",
     "other": "Lainnya",
@@ -44,8 +50,9 @@
     "qty": "Jml",
     "price": "Harga",
     "amount": "Jumlah",
-    "thank_you": "Terima kasih atas pembelian Anda!",
-    "powered_by": "Didukung oleh Olgax POS"
+    "thank_you": "Terima kasih atas kunjungan Anda!",
+    "powered_by": "Didukung oleh Olgax POS",
+    "preview": "Pratinjau Kuitansi"
   },
   "products": {
     "title": "Produk",
@@ -159,7 +166,8 @@
     "loyalty": "Program loyalitas",
     "inventory": "Inventaris",
     "plugins": "Plugin",
-    "device": "Pengaturan perangkat"
+    "device": "Pengaturan perangkat",
+    "printer_disabled": "Printer nonaktif. Pilih Serial atau USB untuk melakukan tes."
   },
   "common": {
     "save": "Simpan",
@@ -179,6 +187,7 @@
     "back": "Kembali",
     "of": "dari",
     "enabled": "Aktif",
-    "disabled": "Nonaktif"
+    "disabled": "Nonaktif",
+    "delete_customer_failed": "Gagal menghapus pelanggan"
   }
 }

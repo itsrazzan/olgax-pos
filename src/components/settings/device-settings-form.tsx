@@ -48,7 +48,7 @@ export function DeviceSettingsForm() {
       <div className="space-y-2">
         <label className="text-sm font-medium">Default Payment Method</label>
         <div className="flex gap-2">
-          {(["CASH", "CARD", "OTHER"] as const).map((method) => (
+          {(["CASH", "QRIS", "OTHER"] as const).map((method) => (
             <button
               key={method}
               onClick={() => update({ defaultPaymentMethod: method })}

@@ -20,8 +20,11 @@ export default function LoginPage() {
 
     if (result.error) {
       console.error("[login error]", result.error);
-      const msg = result.error.message ?? result.error.code ?? "Sign-in failed";
-      setError(`${msg} (status: ${result.error.status ?? "?"})`);
+      const isDev = process.env.NODE_ENV === "development";
+      const msg = isDev
+        ? `${result.error.message ?? result.error.code ?? "Sign-in failed"} (status: ${result.error.status ?? "?"})`
+        : "Email atau password salah";
+      setError(msg);
       setLoading(false);
       return;
     }
