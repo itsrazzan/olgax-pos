@@ -10,7 +10,7 @@
   </p>
   <p>
     <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue.svg" />
-    <img alt="Version 0.1" src="https://img.shields.io/badge/version-0.1--MVP-orange.svg" />
+    <img alt="Version 1.0.0" src="https://img.shields.io/badge/version-1.0.0--rc.1-brightgreen.svg" />
     <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-black.svg" />
     <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6.svg" />
   </p>
@@ -29,7 +29,7 @@
 
 ---
 
-## Features (v0.1 MVP)
+## Features (v1.0.0)
 
 | Feature | Status |
 |---|---|
@@ -38,11 +38,11 @@
 | Stock adjustment history with audit trail | ✅ |
 | Supplier management | ✅ |
 | POS checkout — cart, qty, discount, tax | ✅ |
-| Split-tender payments (Cash + Card + Other) | ✅ |
+| Split-tender payments (Cash + QRIS + Other) | ✅ |
 | Hold & recall orders | ✅ |
 | Void sale with reason | ✅ |
 | Refund / partial refund support | ✅ |
-| Tip support at checkout | ✅ |
+| Dynamic Tip support at checkout | ✅ |
 | Receipt printing (ESC/POS thermal + browser fallback) | ✅ |
 | Customer directory with purchase history | ✅ |
 | Loyalty points (earn & redeem) | ✅ |
@@ -53,6 +53,10 @@
 | Breadcrumb navigation on detail pages | ✅ |
 | Docker Compose ready | ✅ |
 | PWA / installable on tablet | ✅ |
+| **New:** Full Indonesian Localization (ID) | ✅ |
+| **New:** Dynamic Image Serving (Docker compatible) | ✅ |
+| **New:** Security: Rate Limiting & Anti-Race Condition | ✅ |
+| **New:** DB Scalability Indexes | ✅ |
 
 ---
 
@@ -134,11 +138,11 @@ Open [http://localhost:3000](http://localhost:3000). A setup wizard will guide y
 
 ## Roadmap
 
-The MVP (v0.1) is designed to be immediately useful for small businesses while laying clean groundwork for future features:
+The core system (v1.0.0) is stable and production-ready for small businesses. Future improvements include:
 
-- [ ] Multi-language (next-intl)
+- [x] Multi-language (next-intl) — **Completed (Indonesian added)**
 - [ ] Multi-store / multi-location
-- [ ] Customer directory + loyalty points
+- [x] Customer directory + loyalty points — **Completed**
 - [ ] Plugin system
 - [ ] Advanced reports + charts
 - [ ] Kitchen Display System (KDS)
